@@ -25,10 +25,14 @@ function ScreenSource() {
 
   useEffect(() => {
     const APIResultsLoading = async() => {
-      const data = await fetch('https://newsapi.org/v2/sources?language=fr&country=fr&apiKey=9de50ca6295d47e0855b01f48e9731fd')
+      const data = await fetch('https://newsapi.org/v2/sources?language=fr&country=fr&apiKey=f2c10d9e90574bfa865f68a53e29dcc7')
       const body = await data.json()
+      console.log('body =====>', body);
       setSourceList(body.sources)
+
     }
+
+
 
     APIResultsLoading()
   }, [])
@@ -36,11 +40,11 @@ function ScreenSource() {
   return (
     <div>
         <Nav/>
-       
+
        <div className="Banner"/>
 
        <div className="HomeThemes">
-          
+
               <List
                   itemLayout="horizontal"
                   dataSource={sourceList}
@@ -57,7 +61,7 @@ function ScreenSource() {
 
 
           </div>
-                 
+
       </div>
   );
 }

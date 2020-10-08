@@ -15,13 +15,13 @@ function ScreenArticlesBySource(props) {
 
   useEffect(() => {
     const findArticles = async() => {
-      const data = await fetch(`https://newsapi.org/v2/top-headlines?sources=${props.match.params.id}&apiKey=9de50ca6295d47e0855b01f48e9731fd`)
+      const data = await fetch(`https://newsapi.org/v2/top-headlines?sources=${props.match.params.id}&apiKey=f2c10d9e90574bfa865f68a53e29dcc7`)
       const body = await data.json()
       console.log(body)
-      setArticleList(body.articles) 
+      setArticleList(body.articles)
     }
 
-    findArticles()    
+    findArticles()
   },[])
 
   var showModal = (title, content) => {
@@ -43,7 +43,7 @@ function ScreenArticlesBySource(props) {
 
   return (
     <div>
-         
+
             <Nav/>
 
             <div className="Banner"/>
@@ -53,10 +53,10 @@ function ScreenArticlesBySource(props) {
                 <div key={i} style={{display:'flex',justifyContent:'center'}}>
 
                 <Card
-                  
-                  style={{ 
-                  width: 300, 
-                  margin:'15px', 
+
+                  style={{
+                  width: 300,
+                  margin:'15px',
                   display:'flex',
                   flexDirection: 'column',
                   justifyContent:'space-between' }}
@@ -90,15 +90,15 @@ function ScreenArticlesBySource(props) {
               </div>
 
               ))}
-              
 
 
-            
 
-           </div> 
 
-         
-      
+
+           </div>
+
+
+
       </div>
   );
 }

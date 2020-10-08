@@ -24,7 +24,7 @@ function ScreenSource() {
   ];
 
   useEffect(() => {
-    const APIResultsLoading = async() => {
+    const APIResultsLoading = async () => {
       const data = await fetch('https://newsapi.org/v2/sources?language=fr&country=fr&apiKey=f2c10d9e90574bfa865f68a53e29dcc7')
       const body = await data.json()
       console.log('body =====>', body);

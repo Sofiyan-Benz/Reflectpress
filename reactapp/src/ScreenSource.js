@@ -3,31 +3,41 @@ import {Link} from 'react-router-dom'
 import './App.css';
 import { List, Avatar} from 'antd';
 import Nav from './Nav'
+import { connect } from 'react-redux'
 
-function ScreenSource() {
+function ScreenSource(props) {
 
   const [sourceList, setSourceList] = useState([])
+  const [selectedLang, setSelectedLang] = useState(props.selectedLang) //le choix de l'utilisateur dans les etat de redux
 
-  const data = [
-    {
-      title: 'Ant Design Title 1',
-    },
-    {
-      title: 'Ant Design Title 2',
-    },
-    {
-      title: 'Ant Design Title 3',
-    },
-    {
-      title: 'Ant Design Title 4',
-    },
-  ];
+
+  useEffect(() => {
+    const findLang = async () => {
+
+      const reqFind = await fetch(`/user-lang?token=${props.token}`)
+      const resultFind = await reqFind.json()
+      setSelectedLang(resultFind.lang)
+
+    }
+
+
+
+    findLang()
+  }, [])
 
   useEffect(() => {
     const APIResultsLoading = async () => {
-      const data = await fetch('https://newsapi.org/v2/sources?language=fr&country=fr&apiKey=f2c10d9e90574bfa865f68a53e29dcc7')
+      var langue = 'fr'
+      var country = 'fr'
+        if (selectedLang == 'en') {
+           var langue = 'en'
+          var  country = 'us'
+
+        }
+        props.changeLang(selectedLang) // en retournant en arriere l'utilisateur garde tjrs sa langue preferé
+      const data = await fetch(`https://newsapi.org/v2/sources?language=${langue}&country=${country}&apiKey=f2c10d9e90574bfa865f68a53e29dcc7`)
       const body = await data.json()
-      console.log('body =====>', body);
+      console.log('body sources =====>', body);
       setSourceList(body.sources)
 
     }
@@ -35,14 +45,34 @@ function ScreenSource() {
 
 
     APIResultsLoading()
-  }, [])
+  }, [selectedLang])
 
+  var updateLang = async (lang) =>{
+    setSelectedLang(lang)
+
+    const reqLang = await fetch('/user-lang', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `lang=${lang}&token=${props.token}`
+    })
+  }
+
+  var styleBorderFr = {width: '40px', margin: '10px', cursor:'pointer'}
+  if(selectedLang == 'fr') {
+     styleBorderFr.border = "1px solid black"
+  }
+  var styleBorderEn = {width: '40px', margin: '10px', cursor:'pointer'}
+  if(selectedLang == 'en') {
+    styleBorderEn.border = "1px solid black"
+  }
   return (
     <div>
         <Nav/>
 
-       <div className="Banner"/>
-
+       <div style={{display: 'flex', justifyContent:'center', alignItems: 'center'}} className="Banner">
+       <img style={styleBorderFr} src='/images/fr.svg' onClick={() => updateLang('fr')} />
+       <img style={styleBorderEn} src='/images/en.svg' onClick={() => updateLang('en')} />
+      </div>
        <div className="HomeThemes">
 
               <List
@@ -66,4 +96,19 @@ function ScreenSource() {
   );
 }
 
-export default ScreenSource;
+
+function mapStateToProps(state) {
+  return {selectedLang: state.selectedLang, token: state.token }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    changeLang: function(selectedLang) {
+      dispatch({type: 'changeLang', selectedLang: selectedLang })
+    }
+  }
+}
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ScreenSource)

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import "./App.css";
 import { Input, Button } from "antd";
 import { Redirect } from "react-router-dom";
+import { connect } from 'react-redux'
 
-function ScreenHome() {
+function ScreenHome(props) {
   const [signUpUsername, setSignUpUsername] = useState("");
   const [signUpEmail, setSignUpEmail] = useState("");
   const [signUpPassword, setSignUpPassword] = useState("");
@@ -25,6 +26,7 @@ const [signInEmail, setSignInEmail] = useState("");
     const body = await data.json()
     if(body.result == true) {
       setUserExists(true);
+      props.addToken(body.token)
     } else {
       setListErrorsSignup(body.error)
     }
@@ -41,6 +43,7 @@ const handleSubmitSignin =  async () => {
   const body = await data.json()
    if(body.result == true) {
       setUserExists(true);
+      props.addToken(body.token)
 }else{
   setListErrorsSignin(body.error)
 }
@@ -112,4 +115,15 @@ var tabErrorsSignup = listErrorsSignup.map((error, i) => {
   );
 }
 
-export default ScreenHome;
+function mapDispatchToProps(dispatch) {
+  return {
+      addToken : function(token) {
+          dispatch({type: 'addToken', token: token})
+      }
+  }
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(ScreenHome)

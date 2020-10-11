@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import './App.css';
 import { Card, Icon, Modal} from 'antd';
 import Nav from './Nav'
-
+import { connect } from 'react-redux';
 const { Meta } = Card;
 
 function ScreenArticlesBySource(props) {
@@ -17,7 +17,7 @@ function ScreenArticlesBySource(props) {
     const findArticles = async() => {
       const data = await fetch(`https://newsapi.org/v2/top-headlines?sources=${props.match.params.id}&apiKey=f2c10d9e90574bfa865f68a53e29dcc7`)
       const body = await data.json()
-      console.log(body)
+      console.log('findArticles',body)
       setArticleList(body.articles)
     }
 
@@ -40,6 +40,16 @@ function ScreenArticlesBySource(props) {
     console.log(e)
     setVisible(false)
   }
+//enregistrer l'article dans la bdd
+var saveArticle =  async article => {
+  props.addToWishList(article)
+
+  const saveReq = await fetch('/wishlist-article', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `name=${article.title}&content=${article.content}&desc=${article.description}&lang=${props.selectedLang}&img=${article.urlToImage}&token=${props.token}`
+  })
+}
 
   return (
     <div>
@@ -67,8 +77,8 @@ function ScreenArticlesBySource(props) {
                   />
                   }
                   actions={[
-                      <Icon type="read" key="ellipsis2" onClick={() => showModal(article.title,article.content)} />,
-                      <Icon type="like" key="ellipsis"/>
+                      <Icon type="read" key="ellipsis2" onClick={() => showModal(article.title, article.content)} />,
+                      <Icon type="like" key="ellipsis" onClick={() => saveArticle(article)} />
                   ]}
                   >
 
@@ -103,4 +113,22 @@ function ScreenArticlesBySource(props) {
   );
 }
 
-export default ScreenArticlesBySource;
+function mapDispatchTopProps(dispatch){
+  return {
+    addToWishList: function(article){
+      dispatch({type: 'addArticle',
+      articleLiked: article
+  })
+    }
+  }
+}
+
+function mapStateToProps(state){
+  return {token: state.token, selectedLang: state.selectedLang}
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchTopProps
+)(ScreenArticlesBySource)
+

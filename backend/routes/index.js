@@ -12,7 +12,7 @@ var articleModel = require('../models/articles')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.sendFile(path.join(__dirname, "../reactapp/build"));
 });
 
 router.post('/sign-up', async function (req, res,next){
